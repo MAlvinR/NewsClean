@@ -1,3 +1,7 @@
+import com.android.build.api.variant.BuildConfigField
+import java.io.StringReader
+import java.util.Properties
+
 plugins {
     alias(libs.plugins.android.library)
     alias(libs.plugins.kotlin.android)
@@ -30,4 +34,20 @@ dependencies {
     kapt(libs.hilt.compiler)
 
     testImplementation(libs.junit)
+}
+
+val apiKey = providers.fileContents(
+    isolated.rootProject.projectDirectory.file("local.properties")
+).asText.map { text ->
+    val properties = Properties()
+    properties.load(StringReader(text))
+    properties["API_KEY"]
+}.orElse("abcdef123456")
+
+androidComponents {
+    onVariants {
+        it.buildConfigFields.put("NEWS_API_KEY", apiKey.map { value ->
+            BuildConfigField(type = "String", value = """$value""", comment = null)
+        })
+    }
 }
