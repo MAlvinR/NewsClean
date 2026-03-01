@@ -3,8 +3,8 @@ package co.malvinr.feature.home
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import co.malvinr.core.domain.Article
-import co.malvinr.core.domain.GetHeadlinesUseCases
+import co.malvinr.core.domain.model.Article
+import co.malvinr.core.domain.usecase.GetHeadlinesUseCases
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow

@@ -1,6 +1,6 @@
 package co.malvinr.data.di
 
-import co.malvinr.core.domain.ArticleRepository
+import co.malvinr.core.domain.repository.ArticleRepository
 import co.malvinr.data.repository.ArticleRepositoryImpl
 import dagger.Binds
 import dagger.Module

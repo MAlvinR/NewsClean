@@ -1,4 +1,4 @@
-package co.malvinr.core.domain
+package co.malvinr.core.domain.model
 
 data class Article(
     val id: String,

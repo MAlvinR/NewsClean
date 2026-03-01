@@ -1,6 +1,6 @@
 package co.malvinr.data.mapper
 
-import co.malvinr.core.domain.Article
+import co.malvinr.core.domain.model.Article
 import co.malvinr.network.model.ArticlesListResponse
 import java.util.UUID
 
