@@ -48,6 +48,7 @@ dependencies {
     implementation(project(":feature:home"))
     implementation(project(":feature:detail-article"))
     implementation(project(":feature:search"))
+    implementation(project(":feature:category"))
 
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)

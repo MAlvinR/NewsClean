@@ -7,6 +7,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
+import co.malvinr.feature.category.CategoryScreen
 import co.malvinr.feature.detail_article.DetailArticleScreen
 import co.malvinr.feature.home.HomeScreen
 import co.malvinr.feature.search.SearchScreen
@@ -25,8 +26,17 @@ fun NewsNavHost() {
                     val encodedUrl = Uri.encode(articleUrl)
                     navController.navigate("${AppDestinations.DETAIL}/$encodedUrl")
                 },
+                onCategoryClick = {
+                    navController.navigate(AppDestinations.CATEGORIES)
+                },
                 onSearchClick = {
                     navController.navigate(AppDestinations.SEARCH)
+                }
+            )
+        }
+        composable(route = AppDestinations.CATEGORIES) {
+            CategoryScreen(
+                onItemClick = {
                 }
             )
         }
@@ -63,6 +73,7 @@ object AppDestinations {
     const val HOME = "home"
     const val DETAIL = "detail"
     const val SEARCH = "search"
+    const val CATEGORIES = "categories"
 
     object Args {
         const val NEWS_URL = "url"

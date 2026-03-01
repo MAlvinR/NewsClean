@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Category
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -32,6 +33,7 @@ import co.malvinr.core.domain.model.Article
 @Composable
 fun HomeScreen(
     onItemClick: (String) -> Unit,
+    onCategoryClick: () -> Unit,
     onSearchClick: () -> Unit,
     viewModel: HomeViewModel = hiltViewModel()
 ) {
@@ -40,6 +42,7 @@ fun HomeScreen(
     HomeContent(
         homeUiState = homeState,
         onItemClick = onItemClick,
+        onCategoryClick = onCategoryClick,
         onSearchClick = onSearchClick
     )
 }
@@ -49,6 +52,7 @@ fun HomeScreen(
 fun HomeContent(
     homeUiState: HomeUiState,
     onItemClick: (String) -> Unit,
+    onCategoryClick: () -> Unit,
     onSearchClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
@@ -58,6 +62,12 @@ fun HomeContent(
             TopAppBar(
                 title = { Text("News Clean") },
                 actions = {
+                    IconButton(onClick = onCategoryClick) {
+                        Icon(
+                            imageVector = Icons.Default.Category,
+                            contentDescription = "Select Categories"
+                        )
+                    }
                     IconButton(onClick = onSearchClick) {
                         Icon(
                             imageVector = Icons.Default.Search,

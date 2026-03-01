@@ -1,7 +1,9 @@
 package co.malvinr.data.di
 
 import co.malvinr.core.domain.repository.ArticleRepository
+import co.malvinr.core.domain.repository.CategoryRepository
 import co.malvinr.data.repository.ArticleRepositoryImpl
+import co.malvinr.data.repository.CategoryRepositoryImpl
 import dagger.Binds
 import dagger.Module
 import dagger.hilt.InstallIn
@@ -17,4 +19,10 @@ abstract class DataModule {
     abstract fun bindArticleRepository(
         articleRepositoryImpl: ArticleRepositoryImpl
     ) : ArticleRepository
+
+    @Binds
+    @Singleton
+    abstract fun bindCategoryRepository(
+        categoryRepositoryImpl: CategoryRepositoryImpl
+    ) : CategoryRepository
 }
