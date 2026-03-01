@@ -1,10 +1,12 @@
 package co.malvinr.feature.home
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -23,22 +25,24 @@ import co.malvinr.core.domain.Article
 
 @Composable
 fun HomeScreen(
+    onItemClick: (String) -> Unit,
     viewModel: HomeViewModel = hiltViewModel()
 ) {
     val homeState by viewModel.homeState.collectAsStateWithLifecycle()
 
-    HomeContent(homeState)
+    HomeContent(homeUiState = homeState, onItemClick = onItemClick)
 }
 
 @Composable
 fun HomeContent(
     homeUiState: HomeUiState,
+    onItemClick: (String) -> Unit,
     modifier: Modifier = Modifier
 ) {
-    Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
+    Scaffold(modifier = modifier.fillMaxSize()) { innerPadding ->
         Box(modifier = Modifier.padding(innerPadding)) {
             if (homeUiState is HomeUiState.Content) {
-                ArticlesList(homeUiState.headlines)
+                ArticlesList(articles = homeUiState.headlines, onItemClick = onItemClick)
             }
         }
     }
@@ -47,6 +51,7 @@ fun HomeContent(
 @Composable
 fun ArticlesList(
     articles: List<Article>,
+    onItemClick: (String) -> Unit,
     modifier: Modifier = Modifier
 ) {
     LazyColumn(
@@ -55,11 +60,16 @@ fun ArticlesList(
         verticalArrangement = Arrangement.spacedBy(4.dp)
     ) {
         items(
-            items = articles
+            items = articles,
+            key = { article -> article.id }
         ) { article ->
             Text(
                 text = "Title: ${article.title}",
-                modifier = modifier.background(Color.White),
+
+                modifier = modifier
+                    .fillMaxWidth()
+                    .background(Color.White)
+                    .clickable(onClick = { onItemClick(article.url) }),
                 style = TextStyle(color = Color.Black)
             )
         }
@@ -71,9 +81,9 @@ fun ArticlesList(
 @Composable
 fun Articles() {
     val articles = listOf(
-        Article("title 1", "", "", "", ""),
-        Article("title 2", "", "", "", ""),
+        Article("1", "title 1", "", "", "", ""),
+        Article("2", "title 2", "", "", "", ""),
     )
 
-    ArticlesList(articles)
+    ArticlesList(articles, onItemClick = {})
 }
