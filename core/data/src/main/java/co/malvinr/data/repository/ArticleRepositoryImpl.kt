@@ -3,29 +3,23 @@ package co.malvinr.data.repository
 import co.malvinr.core.domain.model.Article
 import co.malvinr.core.domain.repository.ArticleRepository
 import co.malvinr.data.mapper.toDomainList
-import co.malvinr.network.api.NewsApiService
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.flow
-import kotlinx.coroutines.flow.flowOn
+import co.malvinr.network.NetworkDataSource
 import javax.inject.Inject
 import javax.inject.Singleton
 
 @Singleton
 class ArticleRepositoryImpl @Inject constructor(
-    private val apiService: NewsApiService
+    private val networkDataSource: NetworkDataSource
 ) : ArticleRepository {
 
     override suspend fun getArticle(): Result<List<Article>> =
         runCatching {
-            apiService.getTopHeadlines("us").articles.toDomainList()
+            networkDataSource.getTopHeadlines().articles.toDomainList()
         }
 
-    override fun searchArticle(query: String): Flow<Result<List<Article>>> = flow {
-        emit(
-            runCatching {
-                apiService.searchEverything(query).articles.toDomainList()
-            }
-        )
-    }.flowOn(Dispatchers.IO)
+    override suspend fun searchArticle(query: String): Result<List<Article>> =
+        runCatching {
+            networkDataSource.searchEverything(query).articles.toDomainList()
+        }
+
 }

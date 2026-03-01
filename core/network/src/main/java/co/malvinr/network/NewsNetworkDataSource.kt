@@ -1,0 +1,17 @@
+package co.malvinr.network
+
+import co.malvinr.network.api.NewsApiService
+import co.malvinr.network.model.ArticleResponse
+import javax.inject.Inject
+import javax.inject.Singleton
+
+@Singleton
+class NewsNetworkDataSource @Inject constructor(
+    private val apiService: NewsApiService
+) : NetworkDataSource {
+    override suspend fun getTopHeadlines(): ArticleResponse =
+        apiService.getTopHeadlines("us")
+
+    override suspend fun searchEverything(query: String): ArticleResponse =
+        apiService.searchEverything(query)
+}

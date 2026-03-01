@@ -1,11 +1,19 @@
 package co.malvinr.network.di
 
+import android.content.Context
+import co.malvinr.network.LocalAssetDataSource
+import co.malvinr.network.json.AssetManager
+import co.malvinr.network.JsonAssetDataSource
+import co.malvinr.network.NetworkDataSource
+import co.malvinr.network.NewsNetworkDataSource
 import co.malvinr.network.interceptor.NewsApiKeyInterceptor
 import co.malvinr.network.api.NewsApiService
 import com.jakewharton.retrofit2.converter.kotlinx.serialization.asConverterFactory
+import dagger.Binds
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
+import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
 import kotlinx.serialization.json.Json
 import okhttp3.MediaType.Companion.toMediaType
@@ -28,6 +36,12 @@ object NetworkModule {
         coerceInputValues = true
         isLenient = false
     }
+
+    @Provides
+    @Singleton
+    fun provideJsonAssetManager(
+        @ApplicationContext context: Context
+    ) : AssetManager = AssetManager(context.assets::open)
 
     @Provides
     @Singleton
@@ -68,4 +82,21 @@ object NetworkModule {
     @Singleton
     fun provideNewsApiService(retrofit: Retrofit): NewsApiService =
         retrofit.create(NewsApiService::class.java)
+}
+
+@Module
+@InstallIn(SingletonComponent::class)
+abstract class DataSourceModule {
+    @Binds
+    @Singleton
+    abstract fun bindAssetDataSource(
+        localAssetDataSource: LocalAssetDataSource
+    ) : JsonAssetDataSource
+
+    @Binds
+    @Singleton
+    abstract fun bindNetworkDataSource(
+        networkDataSource: NewsNetworkDataSource
+    ) : NetworkDataSource
+
 }
