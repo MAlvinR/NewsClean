@@ -7,6 +7,7 @@ interface NetworkDataSource {
     suspend fun getTopHeadlines(
         country: String,
         sources: String,
+        query: String,
         page: Int,
         pageSize: Int
     ): ArticleResponse

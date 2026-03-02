@@ -13,10 +13,11 @@ class NewsNetworkDataSource @Inject constructor(
     override suspend fun getTopHeadlines(
         country: String,
         sources: String,
+        query: String,
         page: Int,
         pageSize: Int
     ): ArticleResponse =
-        apiService.getTopHeadlines(country, sources, page, pageSize)
+        apiService.getTopHeadlines(country, sources, query, page, pageSize)
 
     override suspend fun searchEverything(query: String): ArticleResponse =
         apiService.searchEverything(query)

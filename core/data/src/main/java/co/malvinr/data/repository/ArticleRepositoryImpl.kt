@@ -18,7 +18,8 @@ class ArticleRepositoryImpl @Inject constructor(
 
     override fun fetchTopHeadlines(
         country: String,
-        sources: String
+        sources: String,
+        query: String
     ): Flow<PagingData<Article>> =
         Pager(
             config = PagingConfig(
@@ -28,7 +29,7 @@ class ArticleRepositoryImpl @Inject constructor(
                 enablePlaceholders = false
             ),
             pagingSourceFactory = {
-                ArticlePagingSource(networkDataSource, country, sources)
+                ArticlePagingSource(networkDataSource, country, sources, query)
             }
         ).flow
 

@@ -1,6 +1,5 @@
 package co.malvinr.feature.home
 
-import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.paging.PagingData
@@ -8,45 +7,44 @@ import androidx.paging.cachedIn
 import co.malvinr.core.domain.model.Article
 import co.malvinr.core.domain.usecase.GetTopHeadlinesUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.flow.debounce
+import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.flatMapLatest
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.stateIn
 import javax.inject.Inject
 
 @HiltViewModel
 class HomeViewModel @Inject constructor(
-    getTopHeadlinesUseCase: GetTopHeadlinesUseCase
+    private val getTopHeadlinesUseCase: GetTopHeadlinesUseCase,
 ) : ViewModel() {
-//    private val _homeState: MutableStateFlow<HomeUiState> = MutableStateFlow(HomeUiState.Loading)
-//    val homeState: StateFlow<HomeUiState> = _homeState.asStateFlow()
+    private val _query = MutableStateFlow("")
+    val query: StateFlow<String> = _query.asStateFlow()
 
-//    init {
-//        fetchHeadlines()
-//    }
+    val uiState: StateFlow<HomeUiState> = _query
+        .map { if (it.isBlank()) HomeUiState.Idle else HomeUiState.Active }
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), HomeUiState.Idle)
 
-    val articleDataFlow: Flow<PagingData<Article>> = getTopHeadlinesUseCase().cachedIn(viewModelScope)
+    @OptIn(FlowPreview::class, ExperimentalCoroutinesApi::class)
+    val articleDataFlow: Flow<PagingData<Article>> = _query
+        .debounce(300L)
+        .distinctUntilChanged()
+        .flatMapLatest { query -> getTopHeadlinesUseCase(query) }
+        .cachedIn(viewModelScope)
 
-//    private fun fetchHeadlines() {
-//        viewModelScope.launch {
-//            _homeState.value = HomeUiState.Loading
-//            Log.d("WAWAWA", "hasilnya: ${getTopHeadlinesUseCase()}")
-//            _homeState.value = getTopHeadlinesUseCase()
-//                .fold(
-//                    onSuccess = { HomeUiState.Content(it) },
-//                    onFailure = { HomeUiState.Error(it.message ?: "Unknown Error") }
-//                )
-//        }
-//    }
+    fun onSearchQueryChanged(query: String) {
+        _query.value = query
+    }
 }
 
 sealed interface HomeUiState {
-    data object Loading : HomeUiState
-
-    data class Content(
-        val headlines: List<Article>
-    ) : HomeUiState
-
-    data class Error(val error: String): HomeUiState
+    data object Idle : HomeUiState
+    data object Active : HomeUiState
 }

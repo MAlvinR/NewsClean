@@ -12,13 +12,13 @@ const val EMPTY_STRING = ""
 class GetTopHeadlinesUseCase @Inject constructor(
     private val repository: ArticleRepository
 ) {
-    operator fun invoke(): Flow<PagingData<Article>> =
-        repository.fetchTopHeadlines(COUNTRY_US, EMPTY_STRING)
+    operator fun invoke(query: String = ""): Flow<PagingData<Article>> =
+        repository.fetchTopHeadlines(COUNTRY_US, EMPTY_STRING, query)
 }
 
 class GetHeadlinesBySourceUseCase @Inject constructor(
     private val repository: ArticleRepository
 ) {
-    operator fun invoke(source: String): Flow<PagingData<Article>> =
-        repository.fetchTopHeadlines(EMPTY_STRING, source)
+    operator fun invoke(source: String, query: String = ""): Flow<PagingData<Article>> =
+        repository.fetchTopHeadlines(EMPTY_STRING, source, query)
 }

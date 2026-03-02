@@ -10,7 +10,8 @@ import java.io.IOException
 class ArticlePagingSource(
     private val networkDataSource: NetworkDataSource,
     private val country: String,
-    private val sources: String
+    private val sources: String,
+    private val query: String
 ) : PagingSource<Int, Article>() {
 
     override fun getRefreshKey(state: PagingState<Int, Article>): Int? {
@@ -28,6 +29,7 @@ class ArticlePagingSource(
             val response = networkDataSource.getTopHeadlines(
                 country = country,
                 sources = sources,
+                query = query,
                 page = page,
                 pageSize = params.loadSize
             )
