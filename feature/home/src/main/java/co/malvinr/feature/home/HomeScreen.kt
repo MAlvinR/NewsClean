@@ -109,7 +109,7 @@ fun ArticlesList(
                     modifier = modifier
                         .fillMaxWidth()
                         .background(Color.White)
-                        .clickable(onClick = { article.url }),
+                        .clickable(onClick = { onItemClick(article.url) }),
                     style = TextStyle(color = Color.Black)
                 )
             }
