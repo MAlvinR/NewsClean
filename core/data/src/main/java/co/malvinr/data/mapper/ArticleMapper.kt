@@ -6,11 +6,10 @@ import co.malvinr.core.domain.model.Source
 import co.malvinr.network.model.ArticlesListResponse
 import co.malvinr.network.model.CategoryResponse
 import co.malvinr.network.model.SourceListResponse
-import co.malvinr.network.model.SourceResponse
 import java.util.UUID
 
 fun ArticlesListResponse.toDomain(): Article = Article(
-    id = generateUUID("$title|$publishedAt"),
+    id = generateUUID(),
     title = title,
     description = description,
     thumbUrl = urlToImage,
@@ -21,7 +20,7 @@ fun ArticlesListResponse.toDomain(): Article = Article(
 @JvmName("toArticleDomainList")
 fun List<ArticlesListResponse>.toDomainList(): List<Article> = map { it.toDomain() }
 
-fun generateUUID(value: String): String = UUID.nameUUIDFromBytes(value.toByteArray()).toString()
+fun generateUUID(): String = UUID.randomUUID().toString()
 
 fun CategoryResponse.toDomain(): Category = Category(
     id = id,
