@@ -22,6 +22,6 @@ class NewsNetworkDataSource @Inject constructor(
     override suspend fun searchEverything(query: String): ArticleResponse =
         apiService.searchEverything(query)
 
-    override suspend fun getSourceByCategory(category: String): SourceResponse =
-        apiService.getSourceByCategory(category)
+    override suspend fun getSources(category: String): SourceResponse =
+        apiService.getSources(category)
 }

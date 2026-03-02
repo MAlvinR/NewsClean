@@ -22,7 +22,7 @@ interface NewsApiService {
     ): ArticleResponse
 
     @GET("sources")
-    suspend fun getSourceByCategory(
+    suspend fun getSources(
         @Query("category") query: String
     ): SourceResponse
 }

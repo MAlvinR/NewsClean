@@ -12,5 +12,6 @@ data class SourceResponse(
 data class SourceListResponse(
     @SerialName("id") val id: String,
     @SerialName("name") val name: String,
-    @SerialName("url") val url: String
+    @SerialName("url") val url: String,
+    @SerialName("category") val category: String
 )

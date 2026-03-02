@@ -12,8 +12,13 @@ class SourceRepositoryImpl @Inject constructor(
     private val networkDataSource: NetworkDataSource
 ) : SourceRepository {
 
+    override suspend fun getSources(category: String?): Result<List<Source>> =
+        runCatching {
+            networkDataSource.getSources().articles.toDomainList()
+        }
+
     override suspend fun getSourceByCategory(category: String): Result<List<Source>> =
         runCatching {
-            networkDataSource.getSourceByCategory(category).articles.toDomainList()
+            networkDataSource.getSources(category).articles.toDomainList()
         }
 }

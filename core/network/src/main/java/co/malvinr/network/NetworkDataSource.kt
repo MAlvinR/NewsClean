@@ -12,5 +12,5 @@ interface NetworkDataSource {
         pageSize: Int
     ): ArticleResponse
     suspend fun searchEverything(query: String): ArticleResponse
-    suspend fun getSourceByCategory(category: String): SourceResponse
+    suspend fun getSources(category: String = ""): SourceResponse
 }
