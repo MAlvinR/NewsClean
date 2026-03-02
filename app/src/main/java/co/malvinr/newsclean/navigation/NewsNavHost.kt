@@ -11,6 +11,7 @@ import co.malvinr.feature.category.CategoryScreen
 import co.malvinr.feature.detail_article.DetailArticleScreen
 import co.malvinr.feature.home.HomeScreen
 import co.malvinr.feature.search.SearchScreen
+import co.malvinr.feature.sources.SourceScreen
 
 @Composable
 fun NewsNavHost() {
@@ -36,7 +37,8 @@ fun NewsNavHost() {
         }
         composable(route = AppDestinations.CATEGORIES) {
             CategoryScreen(
-                onItemClick = {
+                onItemClick = { category ->
+                    navController.navigate("${AppDestinations.SOURCES}/$category")
                 }
             )
         }
@@ -45,6 +47,19 @@ fun NewsNavHost() {
                 onItemClick = { articleUrl ->
                     val encodedUrl = Uri.encode(articleUrl)
                     navController.navigate("${AppDestinations.DETAIL}/$encodedUrl")
+                },
+            )
+        }
+        composable(
+            route = "${AppDestinations.SOURCES}/{${AppDestinations.Args.CATEGORY_SLUG}}",
+            arguments = listOf(
+                navArgument(AppDestinations.Args.CATEGORY_SLUG) { defaultValue = "" }
+            )
+        ) { backStackEntry ->
+            SourceScreen(
+                onItemClick = { source ->
+//                    val encodedUrl = Uri.encode(articleUrl)
+//                    navController.navigate("${AppDestinations.DETAIL}/$encodedUrl")
                 },
             )
         }
@@ -74,8 +89,10 @@ object AppDestinations {
     const val DETAIL = "detail"
     const val SEARCH = "search"
     const val CATEGORIES = "categories"
+    const val SOURCES = "sources"
 
     object Args {
         const val NEWS_URL = "url"
+        const val CATEGORY_SLUG = "category_slug"
     }
 }

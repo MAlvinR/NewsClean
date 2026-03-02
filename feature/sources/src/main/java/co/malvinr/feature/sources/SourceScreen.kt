@@ -1,4 +1,4 @@
-package co.malvinr.feature.category
+package co.malvinr.feature.sources
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -22,25 +22,25 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import co.malvinr.core.domain.model.Category
+import co.malvinr.core.domain.model.Source
 
 @Composable
-fun CategoryScreen(
+fun SourceScreen(
     onItemClick: (String) -> Unit,
-    viewModel: CategoryViewModel = hiltViewModel()
+    viewModel: SourceViewModel = hiltViewModel()
 ) {
-    val categoryUiState by viewModel.categoryUiState.collectAsStateWithLifecycle()
+    val sourceUiState by viewModel.sourceUiState.collectAsStateWithLifecycle()
 
-    CategoryContent(
-        categoryUiState = categoryUiState,
+    SourceContent(
+        sourceUiState = sourceUiState,
         onItemClick = onItemClick
     )
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun CategoryContent(
-    categoryUiState: CategoryUiState,
+fun SourceContent(
+    sourceUiState: SourceUiState,
     onItemClick: (String) -> Unit,
     modifier: Modifier = Modifier
 ) {
@@ -48,21 +48,21 @@ fun CategoryContent(
         modifier = modifier.fillMaxSize(),
         topBar = {
             TopAppBar(
-                title = { Text("News Categories") }
+                title = { Text("News Sources") }
             )
         }
     ) { innerPadding ->
         Box(modifier = Modifier.padding(innerPadding)) {
-            if (categoryUiState is CategoryUiState.Content) {
-                CategoriesList(categories = categoryUiState.headlines, onItemClick = onItemClick)
+            if (sourceUiState is SourceUiState.Content) {
+                SourcesList(sources = sourceUiState.sources, onItemClick = onItemClick)
             }
         }
     }
 }
 
 @Composable
-fun CategoriesList(
-    categories: List<Category>,
+fun SourcesList(
+    sources: List<Source>,
     onItemClick: (String) -> Unit,
     modifier: Modifier = Modifier
 ) {
@@ -72,16 +72,16 @@ fun CategoriesList(
         verticalArrangement = Arrangement.spacedBy(4.dp)
     ) {
         items(
-            items = categories,
-            key = { category -> category.id }
-        ) { category ->
+            items = sources,
+            key = { source -> source.id }
+        ) { source ->
             Text(
-                text = category.name,
+                text = source.name,
 
                 modifier = modifier
                     .fillMaxWidth()
                     .background(Color.White)
-                    .clickable(onClick = { onItemClick(category.slug) }),
+                    .clickable(onClick = {  }),
                 style = TextStyle(color = Color.Black)
             )
         }

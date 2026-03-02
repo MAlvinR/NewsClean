@@ -21,5 +21,4 @@ class ArticleRepositoryImpl @Inject constructor(
         runCatching {
             networkDataSource.searchEverything(query).articles.toDomainList()
         }
-
 }

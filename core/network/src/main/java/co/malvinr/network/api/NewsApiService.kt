@@ -1,6 +1,7 @@
 package co.malvinr.network.api
 
 import co.malvinr.network.model.ArticleResponse
+import co.malvinr.network.model.SourceResponse
 import retrofit2.http.GET
 import retrofit2.http.Query
 
@@ -16,4 +17,9 @@ interface NewsApiService {
     suspend fun searchEverything(
         @Query("q") query: String
     ): ArticleResponse
+
+    @GET("sources")
+    suspend fun getSourceByCategory(
+        @Query("category") query: String
+    ): SourceResponse
 }
