@@ -46,6 +46,7 @@ dependencies {
     implementation(project(":core:data"))
     implementation(project(":core:domain"))
     implementation(project(":feature:home"))
+    implementation(project(":feature:list-article"))
     implementation(project(":feature:detail-article"))
     implementation(project(":feature:search"))
     implementation(project(":feature:category"))

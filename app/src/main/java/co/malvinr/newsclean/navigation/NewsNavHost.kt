@@ -10,6 +10,7 @@ import androidx.navigation.navArgument
 import co.malvinr.feature.category.CategoryScreen
 import co.malvinr.feature.detail_article.DetailArticleScreen
 import co.malvinr.feature.home.HomeScreen
+import co.malvinr.feature.list_article.ListArticleScreen
 import co.malvinr.feature.search.SearchScreen
 import co.malvinr.feature.sources.SourceScreen
 
@@ -58,8 +59,20 @@ fun NewsNavHost() {
         ) { backStackEntry ->
             SourceScreen(
                 onItemClick = { source ->
-//                    val encodedUrl = Uri.encode(articleUrl)
-//                    navController.navigate("${AppDestinations.DETAIL}/$encodedUrl")
+                    navController.navigate("${AppDestinations.LIST_NEWS}/$source")
+                },
+            )
+        }
+        composable(
+            route = "${AppDestinations.LIST_NEWS}/{${AppDestinations.Args.SOURCE_ID}}",
+            arguments = listOf(
+                navArgument(AppDestinations.Args.SOURCE_ID) { defaultValue = "" }
+            )
+        ) { backStackEntry ->
+            ListArticleScreen(
+                onItemClick = { articleUrl ->
+                    val encodedUrl = Uri.encode(articleUrl)
+                    navController.navigate("${AppDestinations.DETAIL}/$encodedUrl")
                 },
             )
         }
@@ -90,9 +103,11 @@ object AppDestinations {
     const val SEARCH = "search"
     const val CATEGORIES = "categories"
     const val SOURCES = "sources"
+    const val LIST_NEWS = "list_news"
 
     object Args {
         const val NEWS_URL = "url"
         const val CATEGORY_SLUG = "category_slug"
+        const val SOURCE_ID = "source_id"
     }
 }

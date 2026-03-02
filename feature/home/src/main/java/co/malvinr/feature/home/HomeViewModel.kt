@@ -4,7 +4,7 @@ import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import co.malvinr.core.domain.model.Article
-import co.malvinr.core.domain.usecase.GetHeadlinesUseCases
+import co.malvinr.core.domain.usecase.GetTopHeadlinesUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -14,7 +14,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class HomeViewModel @Inject constructor(
-    private val getHeadlinesUseCases: GetHeadlinesUseCases
+    private val getTopHeadlinesUseCase: GetTopHeadlinesUseCase
 ) : ViewModel() {
     private val _homeState: MutableStateFlow<HomeUiState> = MutableStateFlow(HomeUiState.Loading)
     val homeState: StateFlow<HomeUiState> = _homeState.asStateFlow()
@@ -26,8 +26,8 @@ class HomeViewModel @Inject constructor(
     private fun fetchHeadlines() {
         viewModelScope.launch {
             _homeState.value = HomeUiState.Loading
-            Log.d("WAWAWA", "hasilnya: ${getHeadlinesUseCases()}")
-            _homeState.value = getHeadlinesUseCases()
+            Log.d("WAWAWA", "hasilnya: ${getTopHeadlinesUseCase()}")
+            _homeState.value = getTopHeadlinesUseCase()
                 .fold(
                     onSuccess = { HomeUiState.Content(it) },
                     onFailure = { HomeUiState.Error(it.message ?: "Unknown Error") }

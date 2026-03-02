@@ -12,9 +12,12 @@ class ArticleRepositoryImpl @Inject constructor(
     private val networkDataSource: NetworkDataSource
 ) : ArticleRepository {
 
-    override suspend fun getArticle(): Result<List<Article>> =
+    override suspend fun fetchTopHeadlines(
+        country: String,
+        sources: String
+    ): Result<List<Article>> =
         runCatching {
-            networkDataSource.getTopHeadlines().articles.toDomainList()
+            networkDataSource.getTopHeadlines(country, sources).articles.toDomainList()
         }
 
     override suspend fun searchArticle(query: String): Result<List<Article>> =
