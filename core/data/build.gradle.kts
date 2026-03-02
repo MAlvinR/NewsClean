@@ -24,6 +24,7 @@ dependencies {
     implementation(project(":core:domain"))
     implementation(project(":core:network"))
 
+    implementation(libs.paging.runtime)
     implementation(libs.kotlinx.coroutines.android)
     implementation(libs.hilt.android)
     kapt(libs.hilt.compiler)

@@ -4,9 +4,12 @@ import android.util.Log
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import androidx.paging.PagingData
+import androidx.paging.cachedIn
 import co.malvinr.core.domain.model.Article
 import co.malvinr.core.domain.usecase.GetHeadlinesBySourceUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -15,7 +18,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class ListArticleViewModel @Inject constructor(
-    private val getHeadlinesBySourceUseCase: GetHeadlinesBySourceUseCase,
+    getHeadlinesBySourceUseCase: GetHeadlinesBySourceUseCase,
     savedStateHandle: SavedStateHandle
 ) : ViewModel() {
 
@@ -23,24 +26,7 @@ class ListArticleViewModel @Inject constructor(
         "source_id navigation argument is required"
     }
 
-    private val _listArticleState: MutableStateFlow<ListArticleUiState> = MutableStateFlow(ListArticleUiState.Loading)
-    val listArticleState: StateFlow<ListArticleUiState> = _listArticleState.asStateFlow()
-
-    init {
-        fetchHeadlines()
-    }
-
-    private fun fetchHeadlines() {
-        viewModelScope.launch {
-            _listArticleState.value = ListArticleUiState.Loading
-            Log.d("WAWAWA", "hasilnya: ${getHeadlinesBySourceUseCase(source)}")
-            _listArticleState.value = getHeadlinesBySourceUseCase(source)
-                .fold(
-                    onSuccess = { ListArticleUiState.Content(it) },
-                    onFailure = { ListArticleUiState.Error(it.message ?: "Unknown Error") }
-                )
-        }
-    }
+    val articleDataFlow: Flow<PagingData<Article>> = getHeadlinesBySourceUseCase(source).cachedIn(viewModelScope)
 }
 
 sealed interface ListArticleUiState {

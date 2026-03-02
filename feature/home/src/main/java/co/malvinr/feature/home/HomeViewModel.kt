@@ -3,9 +3,12 @@ package co.malvinr.feature.home
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import androidx.paging.PagingData
+import androidx.paging.cachedIn
 import co.malvinr.core.domain.model.Article
 import co.malvinr.core.domain.usecase.GetTopHeadlinesUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -14,26 +17,28 @@ import javax.inject.Inject
 
 @HiltViewModel
 class HomeViewModel @Inject constructor(
-    private val getTopHeadlinesUseCase: GetTopHeadlinesUseCase
+    getTopHeadlinesUseCase: GetTopHeadlinesUseCase
 ) : ViewModel() {
-    private val _homeState: MutableStateFlow<HomeUiState> = MutableStateFlow(HomeUiState.Loading)
-    val homeState: StateFlow<HomeUiState> = _homeState.asStateFlow()
+//    private val _homeState: MutableStateFlow<HomeUiState> = MutableStateFlow(HomeUiState.Loading)
+//    val homeState: StateFlow<HomeUiState> = _homeState.asStateFlow()
 
-    init {
-        fetchHeadlines()
-    }
+//    init {
+//        fetchHeadlines()
+//    }
 
-    private fun fetchHeadlines() {
-        viewModelScope.launch {
-            _homeState.value = HomeUiState.Loading
-            Log.d("WAWAWA", "hasilnya: ${getTopHeadlinesUseCase()}")
-            _homeState.value = getTopHeadlinesUseCase()
-                .fold(
-                    onSuccess = { HomeUiState.Content(it) },
-                    onFailure = { HomeUiState.Error(it.message ?: "Unknown Error") }
-                )
-        }
-    }
+    val articleDataFlow: Flow<PagingData<Article>> = getTopHeadlinesUseCase().cachedIn(viewModelScope)
+
+//    private fun fetchHeadlines() {
+//        viewModelScope.launch {
+//            _homeState.value = HomeUiState.Loading
+//            Log.d("WAWAWA", "hasilnya: ${getTopHeadlinesUseCase()}")
+//            _homeState.value = getTopHeadlinesUseCase()
+//                .fold(
+//                    onSuccess = { HomeUiState.Content(it) },
+//                    onFailure = { HomeUiState.Error(it.message ?: "Unknown Error") }
+//                )
+//        }
+//    }
 }
 
 sealed interface HomeUiState {

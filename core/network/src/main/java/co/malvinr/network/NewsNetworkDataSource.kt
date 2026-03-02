@@ -10,8 +10,13 @@ import javax.inject.Singleton
 class NewsNetworkDataSource @Inject constructor(
     private val apiService: NewsApiService
 ) : NetworkDataSource {
-    override suspend fun getTopHeadlines(country: String, sources: String): ArticleResponse =
-        apiService.getTopHeadlines(country, sources)
+    override suspend fun getTopHeadlines(
+        country: String,
+        sources: String,
+        page: Int,
+        pageSize: Int
+    ): ArticleResponse =
+        apiService.getTopHeadlines(country, sources, page, pageSize)
 
     override suspend fun searchEverything(query: String): ArticleResponse =
         apiService.searchEverything(query)
