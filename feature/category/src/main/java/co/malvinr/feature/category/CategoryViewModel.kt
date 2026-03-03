@@ -1,6 +1,5 @@
 package co.malvinr.feature.category
 
-import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import co.malvinr.core.domain.model.Category
@@ -16,7 +15,8 @@ import javax.inject.Inject
 class CategoryViewModel @Inject constructor(
     private val getCategoriesUseCase: GetCategoriesCase
 ) : ViewModel() {
-    private val _categoryUiState: MutableStateFlow<CategoryUiState> = MutableStateFlow(CategoryUiState.Loading)
+    private val _categoryUiState: MutableStateFlow<CategoryUiState> =
+        MutableStateFlow(CategoryUiState.Loading)
     val categoryUiState: StateFlow<CategoryUiState> = _categoryUiState.asStateFlow()
 
     init {
@@ -26,7 +26,6 @@ class CategoryViewModel @Inject constructor(
     private fun fetchCategories() {
         viewModelScope.launch {
             _categoryUiState.value = CategoryUiState.Loading
-            Log.d("WAWAWA", "hasilnya: ${getCategoriesUseCase()}")
             _categoryUiState.value = getCategoriesUseCase()
                 .fold(
                     onSuccess = { CategoryUiState.Content(it) },
@@ -43,5 +42,5 @@ sealed interface CategoryUiState {
         val headlines: List<Category>
     ) : CategoryUiState
 
-    data class Error(val error: String): CategoryUiState
+    data class Error(val error: String) : CategoryUiState
 }

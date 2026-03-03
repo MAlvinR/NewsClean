@@ -34,7 +34,7 @@ class HomeViewModel @Inject constructor(
 
     @OptIn(FlowPreview::class, ExperimentalCoroutinesApi::class)
     val articleDataFlow: Flow<PagingData<Article>> = _query
-        .debounce(300L)
+        .debounce(500L)
         .distinctUntilChanged()
         .flatMapLatest { query -> getTopHeadlinesUseCase(query) }
         .cachedIn(viewModelScope)

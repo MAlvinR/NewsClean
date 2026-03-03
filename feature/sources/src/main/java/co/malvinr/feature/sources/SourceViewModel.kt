@@ -1,6 +1,5 @@
 package co.malvinr.feature.sources
 
-import android.util.Log
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -33,7 +32,8 @@ class SourceViewModel @Inject constructor(
     private val _searchQuery = MutableStateFlow("")
     val searchQuery: StateFlow<String> = _searchQuery.asStateFlow()
 
-    private val _sourcesByCategoryResults: MutableStateFlow<List<Source>> = MutableStateFlow(emptyList())
+    private val _sourcesByCategoryResults: MutableStateFlow<List<Source>> =
+        MutableStateFlow(emptyList())
     private val _rawSources: MutableStateFlow<List<Source>> = MutableStateFlow(emptyList())
 
     private val _error: MutableStateFlow<String?> = MutableStateFlow(null)
@@ -56,8 +56,6 @@ class SourceViewModel @Inject constructor(
                     else
                         sourcesByCategoryResults
 
-                Log.d("WAWAWOOOO", "search?: ${query.isNotBlank()} ::::: $sourceResults")
-
                 SourceUiState.Content(sourceResults)
             }
         }
@@ -79,24 +77,13 @@ class SourceViewModel @Inject constructor(
             val allSourcesDeferred = getSourcesUseCase()
 
             categoryDeferred
-                .onSuccess {
-                    _sourcesByCategoryResults.value = it
-                    Log.d("WAWADE1", "hasil: ${_sourcesByCategoryResults.value}")
-                }
-                .onFailure {
-                    _error.value = it.message ?: "Unknown Error"
-                    Log.d("WAWADE2", "hasil: ${it.message}")
-                }
+                .onSuccess { _sourcesByCategoryResults.value = it }
+                .onFailure { _error.value = it.message ?: "Unknown Error" }
 
             allSourcesDeferred
-                .onSuccess {
-                    _rawSources.value = it
-                    Log.d("WAWADE3", "hasil: ${_rawSources.value}")
-
-                }
+                .onSuccess { _rawSources.value = it }
                 .onFailure {
                     _error.value = it.message ?: "Unknown Error"
-                    Log.d("WAWADE4", "hasil: ${it.message}")
                 }
 
             _isLoading.value = false

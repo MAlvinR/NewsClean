@@ -24,13 +24,3 @@ class ListArticleViewModel @Inject constructor(
     val articleDataFlow: Flow<PagingData<Article>> =
         getHeadlinesBySourceUseCase(source).cachedIn(viewModelScope)
 }
-
-sealed interface ListArticleUiState {
-    data object Loading : ListArticleUiState
-
-    data class Content(
-        val headlines: List<Article>
-    ) : ListArticleUiState
-
-    data class Error(val error: String) : ListArticleUiState
-}

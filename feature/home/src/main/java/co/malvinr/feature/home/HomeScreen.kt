@@ -123,6 +123,7 @@ fun HomeContent(
                     ArticlesList(
                         articlePagingItems = articlePagingItems,
                         onItemClick = onItemClick,
+                        enableHeaderItem = true,
                         emptyContent = null
                     )
                 }
@@ -130,6 +131,7 @@ fun HomeContent(
                     ArticlesList(
                         articlePagingItems = articlePagingItems,
                         onItemClick = onItemClick,
+                        enableHeaderItem = false,
                         emptyContent = {
                             Box(
                                 modifier = Modifier.fillMaxSize(),
@@ -198,6 +200,7 @@ fun ArticlesList(
     articlePagingItems: LazyPagingItems<Article>,
     onItemClick: (String) -> Unit,
     modifier: Modifier = Modifier,
+    enableHeaderItem: Boolean,
     emptyContent: (@Composable () -> Unit)? = null,
 ) {
     val isRefreshing = articlePagingItems.loadState.refresh is LoadState.Loading
@@ -218,11 +221,11 @@ fun ArticlesList(
     }
 
     LazyColumn(
-        modifier = modifier,
         contentPadding = PaddingValues(vertical = 8.dp),
-        verticalArrangement = Arrangement.spacedBy(4.dp)
+        verticalArrangement = Arrangement.spacedBy(4.dp),
+        modifier = modifier,
     ) {
-        if (articlePagingItems.itemCount > 0) {
+        if (articlePagingItems.itemCount > 0 && enableHeaderItem) {
             item {
                 val firstArticle = articlePagingItems[0]
                 if (firstArticle != null) {
@@ -238,12 +241,15 @@ fun ArticlesList(
             count = articlePagingItems.itemCount,
             key = articlePagingItems.itemKey { it.id }
         ) { index ->
-            val article = articlePagingItems[index]
-            if (article != null) {
-                ArticleListItem(
-                    newsItem = article,
-                    onItemClick = onItemClick
-                )
+            val shouldDisplay = if (enableHeaderItem) index > 0 else true
+            if (shouldDisplay) {
+                val article = articlePagingItems[index]
+                if (article != null) {
+                    ArticleListItem(
+                        newsItem = article,
+                        onItemClick = onItemClick
+                    )
+                }
             }
         }
 
