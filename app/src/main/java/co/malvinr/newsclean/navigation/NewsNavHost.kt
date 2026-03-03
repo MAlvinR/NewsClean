@@ -11,7 +11,6 @@ import co.malvinr.feature.category.CategoryScreen
 import co.malvinr.feature.detail_article.DetailArticleScreen
 import co.malvinr.feature.home.HomeScreen
 import co.malvinr.feature.list_article.ListArticleScreen
-import co.malvinr.feature.search.SearchScreen
 import co.malvinr.feature.sources.SourceScreen
 
 @Composable
@@ -30,9 +29,6 @@ fun NewsNavHost() {
                 },
                 onCategoryClick = {
                     navController.navigate(AppDestinations.CATEGORIES)
-                },
-                onSearchClick = {
-                    navController.navigate(AppDestinations.SEARCH)
                 }
             )
         }
@@ -42,14 +38,6 @@ fun NewsNavHost() {
                     navController.navigate("${AppDestinations.SOURCES}/$category")
                 },
                 onBackTapped = { navController.popBackStack() }
-            )
-        }
-        composable(route = AppDestinations.SEARCH) {
-            SearchScreen(
-                onItemClick = { articleUrl ->
-                    val encodedUrl = Uri.encode(articleUrl)
-                    navController.navigate("${AppDestinations.DETAIL}/$encodedUrl")
-                },
             )
         }
         composable(
@@ -106,7 +94,6 @@ fun NewsNavHost() {
 object AppDestinations {
     const val HOME = "home"
     const val DETAIL = "detail"
-    const val SEARCH = "search"
     const val CATEGORIES = "categories"
     const val SOURCES = "sources"
     const val LIST_NEWS = "list_news"

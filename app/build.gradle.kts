@@ -48,7 +48,6 @@ dependencies {
     implementation(project(":feature:home"))
     implementation(project(":feature:list-article"))
     implementation(project(":feature:detail-article"))
-    implementation(project(":feature:search"))
     implementation(project(":feature:category"))
     implementation(project(":feature:sources"))
 

@@ -70,7 +70,6 @@ import coil.compose.AsyncImage
 fun HomeScreen(
     onItemClick: (String) -> Unit,
     onCategoryClick: () -> Unit,
-    onSearchClick: () -> Unit,
     viewModel: HomeViewModel = hiltViewModel()
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
@@ -83,7 +82,6 @@ fun HomeScreen(
         articlePagingItems = articlePagingItems,
         onItemClick = onItemClick,
         onCategoryClick = onCategoryClick,
-        onSearchClick = onSearchClick,
         onTextChanged = viewModel::onSearchQueryChanged
     )
 }
@@ -96,7 +94,6 @@ fun HomeContent(
     articlePagingItems: LazyPagingItems<Article>,
     onItemClick: (String) -> Unit,
     onCategoryClick: () -> Unit,
-    onSearchClick: () -> Unit,
     onTextChanged: (String) -> Unit,
     modifier: Modifier = Modifier
 ) {
@@ -110,12 +107,6 @@ fun HomeContent(
                         Icon(
                             imageVector = Icons.Default.Category,
                             contentDescription = "Select Categories"
-                        )
-                    }
-                    IconButton(onClick = onSearchClick) {
-                        Icon(
-                            imageVector = Icons.Default.Search,
-                            contentDescription = "Search"
                         )
                     }
                 }
