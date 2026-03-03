@@ -1,6 +1,5 @@
 package co.malvinr.feature.list_article
 
-import android.util.Log
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -10,10 +9,6 @@ import co.malvinr.core.domain.model.Article
 import co.malvinr.core.domain.usecase.GetHeadlinesBySourceUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
@@ -26,7 +21,8 @@ class ListArticleViewModel @Inject constructor(
         "source_id navigation argument is required"
     }
 
-    val articleDataFlow: Flow<PagingData<Article>> = getHeadlinesBySourceUseCase(source).cachedIn(viewModelScope)
+    val articleDataFlow: Flow<PagingData<Article>> =
+        getHeadlinesBySourceUseCase(source).cachedIn(viewModelScope)
 }
 
 sealed interface ListArticleUiState {
@@ -36,5 +32,5 @@ sealed interface ListArticleUiState {
         val headlines: List<Article>
     ) : ListArticleUiState
 
-    data class Error(val error: String): ListArticleUiState
+    data class Error(val error: String) : ListArticleUiState
 }

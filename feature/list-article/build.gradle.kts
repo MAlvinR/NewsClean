@@ -39,6 +39,7 @@ dependencies {
     api(libs.compose.runtime)
     api(libs.paging.runtime)
     api(libs.paging.compose)
+    api(libs.coil.compose)
     implementation(libs.compose.ui.tooling.preview)
     debugImplementation(libs.compose.ui.tooling)
 

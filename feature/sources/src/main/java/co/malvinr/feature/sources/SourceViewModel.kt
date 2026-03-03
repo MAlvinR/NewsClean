@@ -31,6 +31,7 @@ class SourceViewModel @Inject constructor(
     }
 
     private val _searchQuery = MutableStateFlow("")
+    val searchQuery: StateFlow<String> = _searchQuery.asStateFlow()
 
     private val _sourcesByCategoryResults: MutableStateFlow<List<Source>> = MutableStateFlow(emptyList())
     private val _rawSources: MutableStateFlow<List<Source>> = MutableStateFlow(emptyList())

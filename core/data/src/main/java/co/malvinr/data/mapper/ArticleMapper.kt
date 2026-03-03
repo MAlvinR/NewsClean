@@ -6,6 +6,9 @@ import co.malvinr.core.domain.model.Source
 import co.malvinr.network.model.ArticlesListResponse
 import co.malvinr.network.model.CategoryResponse
 import co.malvinr.network.model.SourceListResponse
+import java.text.SimpleDateFormat
+import java.util.Locale
+import java.util.TimeZone
 import java.util.UUID
 
 fun ArticlesListResponse.toDomain(): Article = Article(
@@ -14,7 +17,7 @@ fun ArticlesListResponse.toDomain(): Article = Article(
     description = description,
     thumbUrl = urlToImage,
     url = url,
-    publishedAt = publishedAt
+    publishedAt = publishedAt.toArticleDateFormat()
 )
 
 @JvmName("toArticleDomainList")
@@ -39,3 +42,23 @@ fun SourceListResponse.toDomain(): Source = Source(
 
 @JvmName("toSourceDomainList")
 fun List<SourceListResponse>.toDomainList(): List<Source> = map { it.toDomain() }
+
+fun String.toArticleDateFormat(): String {
+    return try {
+        val cleanedDate = if (this.contains(".")) {
+            this.substringBefore(".") + "Z"
+        } else {
+            this
+        }
+        val inputFormat = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'", Locale.US).apply {
+            timeZone = TimeZone.getTimeZone("UTC")
+        }
+
+        val outputFormat = SimpleDateFormat("MMMM d", Locale.ENGLISH)
+
+        val date = inputFormat.parse(cleanedDate)
+        date?.let { outputFormat.format(it) }?: this
+    } catch (e: Exception) {
+        this
+    }
+}

@@ -40,7 +40,8 @@ fun NewsNavHost() {
             CategoryScreen(
                 onItemClick = { category ->
                     navController.navigate("${AppDestinations.SOURCES}/$category")
-                }
+                },
+                onBackTapped = { navController.popBackStack() }
             )
         }
         composable(route = AppDestinations.SEARCH) {
@@ -56,24 +57,29 @@ fun NewsNavHost() {
             arguments = listOf(
                 navArgument(AppDestinations.Args.CATEGORY_SLUG) { defaultValue = "" }
             )
-        ) { backStackEntry ->
+        ) {
             SourceScreen(
                 onItemClick = { source ->
-                    navController.navigate("${AppDestinations.LIST_NEWS}/$source")
+                    navController.navigate("${AppDestinations.LIST_NEWS}/${source.id}/${source.name}")
                 },
+                onBackTapped = { navController.popBackStack() }
             )
         }
         composable(
-            route = "${AppDestinations.LIST_NEWS}/{${AppDestinations.Args.SOURCE_ID}}",
+            route = "${AppDestinations.LIST_NEWS}/{${AppDestinations.Args.SOURCE_ID}}/{${AppDestinations.Args.SOURCE_NAME}}",
             arguments = listOf(
-                navArgument(AppDestinations.Args.SOURCE_ID) { defaultValue = "" }
+                navArgument(AppDestinations.Args.SOURCE_ID) { defaultValue = "" },
+                navArgument(AppDestinations.Args.SOURCE_NAME) { defaultValue = "" }
             )
         ) { backStackEntry ->
+            val sourceName = backStackEntry.arguments?.getString(AppDestinations.Args.SOURCE_NAME) ?: ""
             ListArticleScreen(
+                sourceName = sourceName,
                 onItemClick = { articleUrl ->
                     val encodedUrl = Uri.encode(articleUrl)
                     navController.navigate("${AppDestinations.DETAIL}/$encodedUrl")
                 },
+                onBackTapped = { navController.popBackStack() }
             )
         }
         composable(
@@ -109,5 +115,6 @@ object AppDestinations {
         const val NEWS_URL = "url"
         const val CATEGORY_SLUG = "category_slug"
         const val SOURCE_ID = "source_id"
+        const val SOURCE_NAME = "source_name"
     }
 }
