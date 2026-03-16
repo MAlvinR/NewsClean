@@ -47,7 +47,7 @@ val apiKey = providers.fileContents(
 androidComponents {
     onVariants {
         it.buildConfigFields.put("NEWS_API_KEY", apiKey.map { value ->
-            BuildConfigField(type = "String", value = """$value""", comment = null)
+            BuildConfigField(type = "String", value = "\"$value\"", comment = null)
         })
     }
 }
