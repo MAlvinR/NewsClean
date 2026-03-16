@@ -88,6 +88,26 @@ pipeline {
                 echo ">>> APK archived successfully."
             }
         }
+
+        // Lint
+        stage('Check Lint') {
+           steps {
+              echo  '>>> Running Lint checks...'
+              sh "./gradlew ktlintCheck${BUILD_VARIANT}"
+           }
+           post {
+              always {
+                publishHTML(target: [
+                  allowMissing         : false,
+                  alwaysLinkToLastBuild: true,
+                  keepAll              : true,
+                  reportDir            : "app/build/reports/lint-results-${BUILD_VARIANT.toLowerCase()}-files",
+                  reportFiles          : "index.html",
+                  reportName           : "Lint Report"
+                ])
+              }
+           }
+        }
     }
 
     // ─── Post Build Actions ───────────────────────────────────────────────────

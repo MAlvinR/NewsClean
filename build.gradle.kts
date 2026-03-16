@@ -6,4 +6,24 @@ plugins {
     alias(libs.plugins.kotlin.kapt) apply false
     alias(libs.plugins.hilt) apply false
     alias(libs.plugins.kotlin.serialization) apply false
+    alias(libs.plugins.ktlint) apply false
+}
+
+allprojects {
+    apply(plugin = "org.jlleitschuh.gradle.ktlint")
+
+    extensions.configure<org.jlleitschuh.gradle.ktlint.KtlintExtension> {
+      version.set("1.2.1")
+      android.set(true)
+      ignoreFailures.set(true)
+      verbose.set(true)
+      outputToConsole.set(true)
+      outputColorName.set("RED")
+
+      filter {
+        include("**/src/main/kotlin/**/*.kt")
+        exclude("**/src/test/kotlin/**/*.kt")
+        exclude("**/build/**")
+      }
+    }
 }
