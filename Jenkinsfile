@@ -93,7 +93,7 @@ pipeline {
         stage('Check Lint') {
            steps {
               echo  '>>> Running Lint checks...'
-              sh "./gradlew ktlintCheck${BUILD_VARIANT}"
+              sh "./gradlew ktlintCheck"
            }
            post {
               always {
@@ -101,7 +101,7 @@ pipeline {
                   allowMissing         : false,
                   alwaysLinkToLastBuild: true,
                   keepAll              : true,
-                  reportDir            : "app/build/reports/lint-results-${BUILD_VARIANT.toLowerCase()}-files",
+                  reportDir            : "app/build/reports/lint-results-files",
                   reportFiles          : "index.html",
                   reportName           : "Lint Report"
                 ])
