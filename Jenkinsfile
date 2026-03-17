@@ -101,9 +101,9 @@ pipeline {
                   allowMissing         : false,
                   alwaysLinkToLastBuild: true,
                   keepAll              : true,
-                  reportDir            : "app/build/reports/lint-results-files",
-                  reportFiles          : "index.html",
-                  reportName           : "Lint Report"
+                  reportDir            : "app/build/reports/ktlint/ktlintMainSourceSetCheck",
+                  reportFiles          : "ktlintMainSourceSetCheck.html",
+                  reportName           : "Ktlint Report"
                 ])
               }
            }
