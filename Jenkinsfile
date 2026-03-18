@@ -95,18 +95,6 @@ pipeline {
               echo  '>>> Running Lint checks...'
               sh "./gradlew ktlintCheck"
            }
-           post {
-              always {
-                publishHTML(target: [
-                  allowMissing         : false,
-                  alwaysLinkToLastBuild: true,
-                  keepAll              : true,
-                  reportDir            : "app/build/reports/ktlint/ktlintMainSourceSetCheck",
-                  reportFiles          : "ktlintMainSourceSetCheck.html",
-                  reportName           : "Ktlint Report"
-                ])
-              }
-           }
         }
     }
 

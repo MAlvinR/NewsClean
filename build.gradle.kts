@@ -25,9 +25,5 @@ allprojects {
         exclude("**/src/test/kotlin/**/*.kt")
         exclude("**/build/**")
       }
-
-      reporters {
-        reporter(org.jlleitschuh.gradle.ktlint.reporter.ReporterType.HTML)
-      }
     }
 }
