@@ -96,6 +96,14 @@ pipeline {
               sh "./gradlew ktlintCheck"
            }
         }
+
+        // Unit Test
+        stage('Run Unit Tests') {
+            steps {
+               echo  '>>> Running Unit tests...'
+               sh "./gradlew testDebugUnitTest"
+            }
+        }
     }
 
     // ─── Post Build Actions ───────────────────────────────────────────────────
