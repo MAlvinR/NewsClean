@@ -104,6 +104,14 @@ pipeline {
                sh "./gradlew testDebugUnitTest"
             }
         }
+
+        // UI Test
+        stage('Run UI Tests') {
+            steps {
+               echo  '>>> Running UI tests...'
+               sh "./gradlew :app:connectedDebugAndroidTest"
+            }
+        }
     }
 
     // ─── Post Build Actions ───────────────────────────────────────────────────
