@@ -8,7 +8,8 @@ pipeline {
         NEWS_API_KEY = credentials('NEWS_API_KEY')
         GRADLE_OPTS       = '-Xmx1g -Xms256m'
         GRADLE_BASE_FLAGS = '--no-daemon --parallel --build-cache'
-        LOCAL_PROPERTY = 'local.properties'
+        GEM_HOME = "${HOME}/.gem"
+        PATH     = "${HOME}/.gem/ruby/2.6.0/bin:${HOME}/.gem/bin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin"
     }
 
     // ─── Pipeline Options ─────────────────────────────────────────────────────
@@ -26,12 +27,6 @@ pipeline {
           name: "GIT_BRANCH",
           description: "Branch Path",
           defaultValue: 'main',
-          trim: true
-        )
-        string(
-          name: "BASE_URL",
-          description: "Base API URL",
-          defaultValue: 'https://newsapi.org/',
           trim: true
         )
     }
@@ -52,55 +47,27 @@ pipeline {
             }
         }
 
-        // ── Stage 2: Configure Environment ───────────────────────────────────
-        stage('Configure Environment') {
+        // ── Stage 2: Prepare Project ──────────────────────────────────────────
+        stage('Prepare Project') {
             steps {
-                echo '>>> Configuring Environment...'
-                sh "bundle config set --local path 'vendor/bundle'"
-                sh "bundle install"
+                echo '>>> Preparing project...'
 
-                // Grant access so gradle can run the build
-                sh "chmod +x gradlew"
+                sh 'chmod +x ./gradlew'
 
-                // Overwrite user input to config
-                sh "sed -i '' 's#^baseUrl=.*#baseUrl=\"'${params.BASE_URL}'\"#' '${env.LOCAL_PROPERTY}'"
+                // Install fastlane directly (no Bundler needed)
+                sh 'gem install fastlane -v 2.214.0 --user-install --no-document'
 
-                // Load local.properties to environment
-                sh "cp ${LOCAL_PROPERTY} ${env.WORKSPACE}"
-                
-                // Check version
-                sh "java --version"
-                sh "gem -v"
+                // Print versions for debugging
+                sh './gradlew --version'
+                sh "${ANDROID_HOME}/platform-tools/adb version"
+                sh 'fastlane --version'
 
-                // Printout all parameters
-                script {
-                    params.keySet().sort().each { key ->
-                        echo "${key} = ${params[key]}"
-                    }
-                }
+                // Clean previous build outputs via Fastlane
+                sh 'fastlane runClean'
             }
         }
 
-        // Stage 3: Parallel Quality Gate
-        stage('Quality Gate') {
-          parallel {
-            stage('Check Lint') {
-              steps {
-                echo '>>> Running Lint checks...'
-                sh "./gradlew ${GRADLE_BASE_FLAGS} ktlintCheck"
-              }
-            }
-
-            stage('Run Unit Tests') {
-              steps {
-                echo  '>>> Running Unit tests...'
-                sh "./gradlew ${GRADLE_BASE_FLAGS} testDebugUnitTest"
-              }
-            }
-          }
-        }
-
-        // ── Stage 4: Build APK ────────────────────────────────────────────────
+        // ── Stage 3: Build APK ────────────────────────────────────────────────
         stage('Build APK') {
             steps {
                 echo ">>> Building ${BUILD_VARIANT} APK via Fastlane..."
@@ -109,12 +76,12 @@ pipeline {
                     "ARTIFACT_TYPE=APK",
                     "NEWS_API_KEY=${NEWS_API_KEY}"
                 ]) {
-                    sh 'bundle exec fastlane build'
+                    sh 'fastlane build'
                 }
             }
         }
 
-        // ── Stage 5: Archive Artifacts ────────────────────────────────────────
+        // ── Stage 4: Archive Artifacts ────────────────────────────────────────
         stage('Archive Artifacts') {
             steps {
                 echo ">>> Archiving APK to ${ARTIFACT_DIR}/..."
@@ -135,6 +102,49 @@ pipeline {
                 echo ">>> APK archived successfully."
             }
         }
+
+        // Parallel Quality Gate
+        stage('Quality Gate') {
+          parallel {
+            stage('Check Lint') {
+              steps {
+                echo '>>> Running Lint checks...'
+                sh "./gradlew ${GRADLE_BASE_FLAGS} ktlintCheck"
+              }
+            }
+
+            stage('Run Unit Tests') {
+              steps {
+                echo  '>>> Running Unit tests...'
+                sh "./gradlew ${GRADLE_BASE_FLAGS} testDebugUnitTest"
+              }
+            }
+          }
+        }
+
+//         // Lint
+//         stage('Check Lint') {
+//            steps {
+//               echo  '>>> Running Lint checks...'
+//               sh "./gradlew ktlintCheck"
+//            }
+//         }
+
+//         // Unit Test
+//         stage('Run Unit Tests') {
+//             steps {
+//                echo  '>>> Running Unit tests...'
+//                sh "./gradlew testDebugUnitTest"
+//             }
+//         }
+
+//        // UI Test
+//         stage('Run UI Tests') {
+//             steps {
+//                echo  '>>> Running UI tests...'
+//                sh "./gradlew ${GRADLE_BASE_FLAGS} :app:connectedDebugAndroidTest"
+//             }
+//         }
     }
 
     // ─── Post Build Actions ───────────────────────────────────────────────────
