@@ -54,22 +54,19 @@ pipeline {
 
                 sh 'chmod +x ./gradlew'
 
-                // Install fastlane directly (with Ruby 2.6 compatible dependency pins)
-                sh '''
-                    gem install aws-eventstream -v 1.3.2 --user-install --no-document
-                    gem install public_suffix -v 4.0.7 --user-install --no-document
-                    gem install addressable -v 2.8.1 --user-install --no-document
-                    gem install faraday -v 1.10.3 --user-install --no-document
-                    gem install fastlane -v 2.214.0 --user-install --no-document
-                '''
+                // Install bundler directly
+                sh 'gem install bundler -v 2.4.22 --user-install --no-document'
 
                 // Print versions for debugging
                 sh './gradlew --version'
                 sh "${ANDROID_HOME}/platform-tools/adb version"
-                sh 'fastlane --version'
 
-                // Clean previous build outputs via Fastlane
-                sh 'fastlane runClean'
+                // Explicitly invoke our safely-installed local bundler binary
+                sh '''
+                    BUNDLER_BIN="$HOME/.gem/ruby/2.6.0/bin/bundle"
+                    $BUNDLER_BIN install --path vendor/bundle
+                    $BUNDLER_BIN exec fastlane runClean
+                '''
             }
         }
 
@@ -82,7 +79,7 @@ pipeline {
                     "ARTIFACT_TYPE=APK",
                     "NEWS_API_KEY=${NEWS_API_KEY}"
                 ]) {
-                    sh 'fastlane build'
+                    sh '"$HOME/.gem/ruby/2.6.0/bin/bundle" exec fastlane build'
                 }
             }
         }
