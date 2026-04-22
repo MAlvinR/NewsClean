@@ -56,6 +56,7 @@ pipeline {
         stage('Configure Environment') {
             steps {
                 echo '>>> Configuring Environment...'
+                sh "bundle config set --local path 'vendor/bundle'"
                 sh "bundle install"
 
                 // Grant access so gradle can run the build
