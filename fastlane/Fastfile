@@ -1,0 +1,104 @@
+default_platform(:android)
+
+platform :android do
+
+  tester       = ENV['RELEASE_TESTER']
+  baseUrl      = ENV['BASE_URL']
+  versionCode  = ENV['VERSION_CODE']
+  versionName  = ENV['VERSION_NAME']
+  releaseNotes = (ENV['RELEASE_NOTES'] || '').gsub("\n", "\n")
+  buildVariant = ENV['BUILD_VARIANT'] || 'debug'
+  artifactType = 'APK' # Forced to APK only
+  buildNumber  = ENV['BUILD_NUMBER']
+  newsApiKey   = ENV['NEWS_API_KEY']
+
+  # ─── Build ──────────────────────────────────────────────────────────────────
+  desc "Build the project (clean + assemble)"
+  lane :build do
+    puts "baseUrl: #{baseUrl}"
+
+    if versionCode && versionCode != "" && versionCode != "-"
+      increment_version_code(
+        gradle_file_path: "app/build.gradle.kts",
+        version_code: versionCode
+      )
+    end
+
+    if versionName && versionName != "" && versionName != "-"
+      increment_version_name(
+        gradle_file_path: "app/build.gradle.kts",
+        version_name: versionName
+      )
+    end
+
+    build_android_app(
+      task:       "clean assemble", # Always assemble (APK)
+      build_type: buildVariant,
+      properties: {
+        "NEWS_API_KEY" => newsApiKey
+      }
+    )
+
+    artifactPath = lane_context[SharedValues::GRADLE_APK_OUTPUT_PATH]
+    puts "APK path: #{artifactPath}"
+
+    # Persist the artifact path for downstream lanes
+    File.open(".env.shared", "w") do |file|
+      file.puts "ARTIFACT_PATH=#{artifactPath}"
+    end
+  end
+
+  # ─── Tests & Lint ───────────────────────────────────────────────────────────
+  lane :runUnitTest do
+    gradle(task: "testDebugUnitTest")
+  end
+
+  lane :runClean do
+    gradle(task: "clean")
+  end
+
+  lane :runKtlintApp do
+    gradle(task: "ktlintCheck")
+  end
+
+  # ─── Firebase Distribution ──────────────────────────────────────────────────
+  desc "Mock Firebase Distribution trigger"
+  lane :deploy_to_firebase do
+    puts ">>> [SIMULATION] Firebase App Distribution triggered for variant: #{buildVariant}"
+    puts ">>> Release Notes: #{releaseNotes}"
+  end
+
+  # ─── Save Artifact ──────────────────────────────────────────────────────────
+  desc "Archive mapping file and APK to a local folder"
+  lane :saveArtifact do
+    artifact_store = ENV['ARTIFACT_STORE_PATH'] || "artifacts"
+
+    if File.exist?('.env.shared')
+      File.readlines('.env.shared').each do |line|
+        key, value = line.strip.split('=', 2)
+        ENV[key] = value
+      end
+    end
+
+    artifactPath = ENV['ARTIFACT_PATH']
+    timestamp    = (Time.now.to_f * 1000).to_i
+    tag          = "#{versionName}-#{buildVariant}-##{buildNumber}-#{timestamp}"
+
+    sh("mkdir -p #{artifact_store}")
+
+    if buildVariant == 'release'
+      # Backup mapping only if it exists
+      mapping_file = "../app/build/outputs/mapping/#{buildVariant}/mapping.txt"
+      if File.exist?(mapping_file)
+        sh("cp #{mapping_file} #{artifact_store}/mapping-#{tag}.txt")
+      end
+    end
+
+    if artifactPath && File.exist?(artifactPath)
+      sh("cp #{artifactPath} #{artifact_store}/app-#{tag}.apk")
+      puts "Successfully archived APK to #{artifact_store}"
+    else
+      puts "Error: Artifact path not found. Cannot archive."
+    end
+  end
+end

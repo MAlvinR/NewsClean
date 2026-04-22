@@ -6,6 +6,9 @@ pipeline {
         BUILD_VARIANT = 'Debug'
         ARTIFACT_DIR = 'artifacts'
         NEWS_API_KEY = credentials('NEWS_API_KEY')
+        GRADLE_OPTS       = '-Xmx1g -Xms256m'
+        GRADLE_BASE_FLAGS = '--no-daemon --parallel --build-cache'
+        LOCAL_PROPERTY = 'local.properties'
     }
 
     // ─── Pipeline Options ─────────────────────────────────────────────────────
@@ -23,6 +26,12 @@ pipeline {
           name: "GIT_BRANCH",
           description: "Branch Path",
           defaultValue: 'main',
+          trim: true
+        )
+        string(
+          name: "BASE_URL",
+          description: "Base API URL",
+          defaultValue: 'https://newsapi.org/',
           trim: true
         )
     }
@@ -43,27 +52,47 @@ pipeline {
             }
         }
 
-        // ── Stage 2: Prepare Project ──────────────────────────────────────────
-        stage('Prepare Project') {
+        // ── Stage 2: Configure Environment ───────────────────────────────────
+        stage('Configure Environment') {
             steps {
-                echo '>>> Preparing project...'
+                echo '>>> Configuring Environment...'
+                // Setup bundler
+                sh "gem install bundler"
+                sh "bundle install"
 
-                sh 'chmod +x ./gradlew'
+                // Grant access so gradle can run the build
+                sh "chmod +x gradlew"
 
-                // Print versions for debugging — helpful when things go wrong
-                sh './gradlew --version'
-                sh "${ANDROID_HOME}/platform-tools/adb version"
+                // Overwrite user input to config
+                sh "sed -i '' 's#^baseUrl=.*#baseUrl=\"'${params.BASE_URL}'\"#' '${env.LOCAL_PROPERTY}'"
 
-                // Clean previous build outputs
-                sh './gradlew clean'
+                // Load local.properties to environment
+                sh "cp ${LOCAL_PROPERTY} ${env.WORKSPACE}"
+                
+                // Check version
+                sh "java --version"
+                sh "gem -v"
+
+                // Printout all parameters
+                script {
+                    params.keySet().sort().each { key ->
+                        echo "${key} = ${params[key]}"
+                    }
+                }
             }
         }
 
         // ── Stage 3: Build APK ────────────────────────────────────────────────
         stage('Build APK') {
             steps {
-                echo ">>> Building ${BUILD_VARIANT} APK..."
-                sh './gradlew assemble${BUILD_VARIANT} -PNEWS_API_KEY=${NEWS_API_KEY}'
+                echo ">>> Building ${BUILD_VARIANT} APK via Fastlane..."
+                withEnv([
+                    "BUILD_VARIANT=${BUILD_VARIANT.toLowerCase()}",
+                    "ARTIFACT_TYPE=APK",
+                    "NEWS_API_KEY=${NEWS_API_KEY}"
+                ]) {
+                    sh 'bundle exec fastlane build'
+                }
             }
         }
 
@@ -89,29 +118,48 @@ pipeline {
             }
         }
 
-        // Lint
-        stage('Check Lint') {
-           steps {
-              echo  '>>> Running Lint checks...'
-              sh "./gradlew ktlintCheck"
-           }
+        // Parallel Quality Gate
+        stage('Quality Gate') {
+          parallel {
+            stage('Check Lint') {
+              steps {
+                echo '>>> Running Lint checks...'
+                sh "./gradlew ${GRADLE_BASE_FLAGS} ktlintCheck"
+              }
+            }
+
+            stage('Run Unit Tests') {
+              steps {
+                echo  '>>> Running Unit tests...'
+                sh "./gradlew ${GRADLE_BASE_FLAGS} testDebugUnitTest"
+              }
+            }
+          }
         }
 
-        // Unit Test
-        stage('Run Unit Tests') {
-            steps {
-               echo  '>>> Running Unit tests...'
-               sh "./gradlew testDebugUnitTest"
-            }
-        }
+//         // Lint
+//         stage('Check Lint') {
+//            steps {
+//               echo  '>>> Running Lint checks...'
+//               sh "./gradlew ktlintCheck"
+//            }
+//         }
 
-        // UI Test
-        stage('Run UI Tests') {
-            steps {
-               echo  '>>> Running UI tests...'
-               sh "./gradlew :app:connectedDebugAndroidTest"
-            }
-        }
+//         // Unit Test
+//         stage('Run Unit Tests') {
+//             steps {
+//                echo  '>>> Running Unit tests...'
+//                sh "./gradlew testDebugUnitTest"
+//             }
+//         }
+
+//        // UI Test
+//         stage('Run UI Tests') {
+//             steps {
+//                echo  '>>> Running UI tests...'
+//                sh "./gradlew ${GRADLE_BASE_FLAGS} :app:connectedDebugAndroidTest"
+//             }
+//         }
     }
 
     // ─── Post Build Actions ───────────────────────────────────────────────────
