@@ -56,6 +56,7 @@ pipeline {
         stage('Configure Environment') {
             steps {
                 echo '>>> Configuring Environment...'
+                sh "gem install bundler -v 1.17.2"
                 sh "bundle install"
 
                 // Grant access so gradle can run the build
