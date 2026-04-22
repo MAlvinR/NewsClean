@@ -57,8 +57,14 @@ pipeline {
             steps {
                 echo '>>> Configuring Environment...'
                 // Setup bundler
-                sh "gem install bundler"
-                sh "bundle install"
+                script {
+                  sh """
+                    export GEM_HOME=\$HOME/.gem
+                    export PATH=\$PATH:\$GEM_HOME/bin
+                    gem install bundler --user-install
+                    bundle install
+                  """
+                }
 
                 // Grant access so gradle can run the build
                 sh "chmod +x gradlew"
