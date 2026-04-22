@@ -54,8 +54,14 @@ pipeline {
 
                 sh 'chmod +x ./gradlew'
 
-                // Install fastlane directly (no Bundler needed)
-                sh 'gem install fastlane -v 2.214.0 --user-install --no-document'
+                // Install fastlane directly (with Ruby 2.6 compatible dependency pins)
+                sh '''
+                    gem install aws-eventstream -v 1.3.2 --user-install --no-document
+                    gem install public_suffix -v 4.0.7 --user-install --no-document
+                    gem install addressable -v 2.8.1 --user-install --no-document
+                    gem install faraday -v 1.10.3 --user-install --no-document
+                    gem install fastlane -v 2.214.0 --user-install --no-document
+                '''
 
                 // Print versions for debugging
                 sh './gradlew --version'
