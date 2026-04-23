@@ -48,18 +48,6 @@ platform :android do
     end
   end
 
-  # ─── Tests & Lint ───────────────────────────────────────────────────────────
-  lane :runUnitTest do
-    gradle(task: "testDebugUnitTest")
-  end
-
-  lane :runClean do
-    gradle(task: "clean")
-  end
-
-  lane :runKtlintApp do
-    gradle(task: "ktlintCheck")
-  end
 
   # ─── Firebase Distribution ──────────────────────────────────────────────────
   desc "Mock Firebase Distribution trigger"
