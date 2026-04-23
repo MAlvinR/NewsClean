@@ -7,7 +7,7 @@ pipeline {
         ARTIFACT_DIR = 'artifacts'
         NEWS_API_KEY = credentials('NEWS_API_KEY')
         GRADLE_OPTS       = '-Xmx1g -Xms256m'
-        GRADLE_BASE_FLAGS = '--no-daemon --parallel --build-cache'
+        GRADLE_BASE_FLAGS = '--no-daemon --parallel --profile'
         GEM_HOME = "${HOME}/.gem"
         PATH     = "${HOME}/.gem/ruby/2.6.0/bin:${HOME}/.gem/bin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin"
     }
@@ -64,8 +64,7 @@ pipeline {
                 // Explicitly invoke our safely-installed local bundler binary
                 sh '''
                     BUNDLER_BIN="$HOME/.gem/ruby/2.6.0/bin/bundle"
-                    $BUNDLER_BIN install --path vendor/bundle
-                    $BUNDLER_BIN exec fastlane runClean
+                    $BUNDLER_BIN install
                 '''
             }
         }
@@ -124,30 +123,6 @@ pipeline {
             }
           }
         }
-
-//         // Lint
-//         stage('Check Lint') {
-//            steps {
-//               echo  '>>> Running Lint checks...'
-//               sh "./gradlew ktlintCheck"
-//            }
-//         }
-
-//         // Unit Test
-//         stage('Run Unit Tests') {
-//             steps {
-//                echo  '>>> Running Unit tests...'
-//                sh "./gradlew testDebugUnitTest"
-//             }
-//         }
-
-//        // UI Test
-//         stage('Run UI Tests') {
-//             steps {
-//                echo  '>>> Running UI tests...'
-//                sh "./gradlew ${GRADLE_BASE_FLAGS} :app:connectedDebugAndroidTest"
-//             }
-//         }
     }
 
     // ─── Post Build Actions ───────────────────────────────────────────────────
