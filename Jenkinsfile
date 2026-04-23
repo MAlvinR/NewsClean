@@ -69,7 +69,26 @@ pipeline {
             }
         }
 
-        // ── Stage 3: Build APK ────────────────────────────────────────────────
+        // ── Stage 3: Parallel Quality Gate
+        stage('Quality Gate') {
+            parallel {
+              stage('Check Lint') {
+                steps {
+                  echo '>>> Running Lint checks...'
+                  sh "./gradlew ${GRADLE_BASE_FLAGS} ktlintCheck"
+                }
+              }
+
+              stage('Run Unit Tests') {
+                steps {
+                  echo  '>>> Running Unit tests...'
+                  sh "./gradlew ${GRADLE_BASE_FLAGS} testDebugUnitTest"
+                }
+              }
+            }
+        }
+
+        // ── Stage 4: Build APK ────────────────────────────────────────────────
         stage('Build APK') {
             steps {
                 echo ">>> Building ${BUILD_VARIANT} APK via Fastlane..."
@@ -83,7 +102,7 @@ pipeline {
             }
         }
 
-        // ── Stage 4: Archive Artifacts ────────────────────────────────────────
+        // ── Stage 5: Archive Artifacts ────────────────────────────────────────
         stage('Archive Artifacts') {
             steps {
                 echo ">>> Archiving APK to ${ARTIFACT_DIR}/..."
@@ -103,25 +122,6 @@ pipeline {
 
                 echo ">>> APK archived successfully."
             }
-        }
-
-        // Parallel Quality Gate
-        stage('Quality Gate') {
-          parallel {
-            stage('Check Lint') {
-              steps {
-                echo '>>> Running Lint checks...'
-                sh "./gradlew ${GRADLE_BASE_FLAGS} ktlintCheck"
-              }
-            }
-
-            stage('Run Unit Tests') {
-              steps {
-                echo  '>>> Running Unit tests...'
-                sh "./gradlew ${GRADLE_BASE_FLAGS} testDebugUnitTest"
-              }
-            }
-          }
         }
     }
 
