@@ -7,7 +7,7 @@ pipeline {
         ARTIFACT_DIR = 'artifacts'
         NEWS_API_KEY = credentials('NEWS_API_KEY')
         GRADLE_OPTS       = '-Xmx1g -Xms256m'
-        GRADLE_BASE_FLAGS = '--no-daemon --parallel --profile'
+        GRADLE_BASE_FLAGS = '--no-daemon --parallel  --build-cache --profile'
         GEM_HOME = "${HOME}/.gem"
         PATH     = "${HOME}/.gem/ruby/2.6.0/bin:${HOME}/.gem/bin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin"
     }
