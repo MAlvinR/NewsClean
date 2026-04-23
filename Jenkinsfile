@@ -134,7 +134,8 @@ pipeline {
             echo "❌ Build FAILED — check the logs above for details."
         }
         always {
-            echo ">>> Build finished"
+            echo ">>> Build finished. Cleaning up workspace..."
+            cleanWs()   // Wipes workspace after every build — good for saving storage
         }
     }
 }
