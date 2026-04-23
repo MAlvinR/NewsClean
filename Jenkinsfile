@@ -54,8 +54,8 @@ pipeline {
 
                 sh 'chmod +x ./gradlew'
 
-                // Install bundler directly
-                sh 'gem install bundler -v 2.4.22 --user-install --no-document'
+                // Install bundler directly with http source to bypass DNS/SSL errors
+                sh 'gem install bundler -v 2.4.22 --user-install --no-document --clear-sources --source http://rubygems.org'
 
                 // Print versions for debugging
                 sh './gradlew --version'
